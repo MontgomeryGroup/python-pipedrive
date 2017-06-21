@@ -35,7 +35,7 @@ class Pipedrive(object):
             response, data = self.http.request(uri, method=method, headers={'Content-Type': 'application/x-www-form-urlencoded'})
         else:
             uri = PIPEDRIVE_API_URL + endpoint + '?api_token=' + str(self.api_token)
-            response, data = self.http.request(uri, method=method, body=urlencode(data), headers={'Content-Type': 'application/x-www-form-urlencoded'})
+            response, data = self.http.request(uri, method=method, body=json.dumps(data), headers={'Content-Type': 'application/json'})
 
         logger.debug('sending {method} request to {uri}'.format(
             method=method,
