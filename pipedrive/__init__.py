@@ -66,24 +66,28 @@ class Pipedrive(object):
         def wrapper(data={}, method='GET'):
 
             response = self._request(name.replace('_', '/'), data, method)
-            if 'error' in response:
-                raise PipedriveError(response)
 
-            additional_data = response.get('additional_data', {})
-            pagination_info = additional_data.get('pagination', {})
+            def _generator():
+                if 'error' in response:
+                    raise PipedriveError(response)
 
-            logger.debug('pagination_info: {}'.format(pagination_info))
-            if isinstance(response['data'], dict):
-                yield response['data']
-            else:
-                yield from response['data']
+                additional_data = response.get('additional_data', {})
+                pagination_info = additional_data.get('pagination', {})
 
-            if pagination_info.get('more_items_in_collection', False):
+                logger.debug('pagination_info: {}'.format(pagination_info))
+                if isinstance(response['data'], dict):
+                    yield response['data']
+                else:
+                    yield from response['data']
 
-                data.update({
-                    'start': pagination_info['next_start']
-                })
+                if pagination_info.get('more_items_in_collection', False):
 
-                yield from wrapper(data, method)
+                    data.update({
+                        'start': pagination_info['next_start']
+                    })
+
+                    yield from wrapper(data, method)
+
+            return _generator()
 
         return wrapper
