@@ -65,6 +65,7 @@ class Pipedrive(object):
     def __getattr__(self, name):
         def wrapper(data={}, method='GET'):
 
+            print(name,data)
             response = self._request(name.replace('_', '/'), data, method)
             if response['data'] is None:
                 return None
