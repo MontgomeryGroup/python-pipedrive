@@ -94,6 +94,6 @@ class Pipedrive(object):
 
                         yield from wrapper(data, method)
 
-            return _generator()
+            return _generator(data['start'],data['end'])
 
         return wrapper
