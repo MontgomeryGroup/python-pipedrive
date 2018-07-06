@@ -89,7 +89,7 @@ class Pipedrive(object):
                     yield from response['data']
 
                 if pagination_info.get('more_items_in_collection', False):
-                    if (pagination_info['next_start'] > end) or (end==-1):
+                    if (pagination_info['next_start'] < end) or (end==-1):
                         data.update({
                             'start': pagination_info['next_start'],
                             'end': end
