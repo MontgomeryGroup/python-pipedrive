@@ -68,12 +68,14 @@ class Pipedrive(object):
             print('wrapper1:',name,data)
             response = self._request(name.replace('_', '/'), data, method)
             if response['data'] is None:
+                print('response data None')
                 return None
 
             def _generator(start=0,end=-1):
                 if 'error' in response:
                     raise PipedriveError(response)
 
+                print('_generator',start,end)
                 additional_data = response.get('additional_data', {})
                 pagination_info = additional_data.get('pagination', {})
 
