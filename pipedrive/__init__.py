@@ -57,37 +57,29 @@ class Pipedrive(object):
 
             # self.api_token = response['authorization'][0]['api_token']
             self.api_token = response['data'][0]['api_token']
-            print('api_token is ' + self.api_token)
         else:
             # Assume that login is actually the api token
             self.api_token = email
 
     def __getattr__(self, name):
         def wrapper(data={}, method='GET'):
-
-            print('wrapper1:',name,data)
             response = self._request(name.replace('_', '/'), data, method)
             if response['data'] is None:
-                print('response data None')
                 return None
 
             def _generator(start=0,end=-1):
                 if 'error' in response:
                     raise PipedriveError(response)
 
-                print('_generator',start,end)
                 additional_data = response.get('additional_data', {})
                 pagination_info = additional_data.get('pagination', {})
 
                 logger.debug('pagination_info: {}'.format(pagination_info))
-                print('pagination_info: {}'.format(pagination_info))
                 if isinstance(response['data'], dict):
                     # a single item
-                    print("yield single item")
                     yield response['data']
                 else:
                     # an array/iterrative
-                    print("yield multiple items")
                     yield from response['data']
 
                 if pagination_info.get('more_items_in_collection', False):
@@ -96,7 +88,6 @@ class Pipedrive(object):
                             'start': pagination_info['next_start'],
                             'end': end
                         })
-                        print("yield next page")
                         yield from wrapper(data, method)
 
             return _generator(data['start'],data['end'])
