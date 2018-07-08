@@ -68,7 +68,7 @@ class Pipedrive(object):
             if not 'end' in data:
                 data['end'] = -1
             response = self._request(name.replace('_', '/'), data, method)
-            if data in response:
+            if 'data' in response:
                 if response['data'] is None:
                     return None
 
