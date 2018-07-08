@@ -63,9 +63,9 @@ class Pipedrive(object):
 
     def __getattr__(self, name):
         def wrapper(data={}, method='GET'):
-            if not 'start' in data:
+            if (not 'start' in data) and ('end' in data):
                 data['start'] = 0
-            if not 'end' in data:
+            if (not 'end' in data) and ('start' in data):
                 data['end'] = -1
             response = self._request(name.replace('_', '/'), data, method)
             if 'data' in response:
