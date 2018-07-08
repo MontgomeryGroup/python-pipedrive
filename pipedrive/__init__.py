@@ -95,6 +95,9 @@ class Pipedrive(object):
                         })
                         yield from wrapper(data, method)
 
-            return _generator(data['start'],data['end'])
+            if ('start' in data) and ('end' in data):
+                return _generator(data['start'],data['end'])
+            else:
+                return _generator()
 
         return wrapper
