@@ -67,7 +67,15 @@ class Pipedrive(object):
                 data['start'] = 0
             if (not 'end' in data) and ('start' in data):
                 data['end'] = -1
-            response = self._request(name.replace('_', '/'), data, method)
+
+            ok = False
+            while not ok:
+                response = self._request(name.replace('_', '/'), data, method)
+                if 'data' in response:
+                    ok = True
+                else:
+                    logger.debug(response)
+
             if 'data' in response:
                 if response['data'] is None:
                     return None
@@ -82,7 +90,7 @@ class Pipedrive(object):
                 logger.debug('pagination_info: {}'.format(pagination_info))
                 if 'data' not in response:
                     print(response)
-                    if 'error' in response:
+                    if 'errorCode' in response:
                         raise PipedriveError(response)
 
                 if isinstance(response['data'], dict):
