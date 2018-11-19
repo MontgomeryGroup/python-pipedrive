@@ -80,6 +80,11 @@ class Pipedrive(object):
                 pagination_info = additional_data.get('pagination', {})
 
                 logger.debug('pagination_info: {}'.format(pagination_info))
+                if 'data' not in response:
+                    print(response)
+                    if 'error' in response:
+                        raise PipedriveError(response)
+
                 if isinstance(response['data'], dict):
                     # a single item
                     yield response['data']
