@@ -32,10 +32,32 @@ class Pipedrive(object):
             uri = PIPEDRIVE_API_URL + endpoint + '?api_token=' + str(self.api_token)
             if data:
                 uri += '&' + urlencode(data)
-            response, data = self.http.request(uri, method=method, headers={'Content-Type': 'application/x-www-form-urlencoded'})
+            tries = 3
+            while True:
+                tries -= 1
+                try:
+                    response, data = self.http.request(uri, method=method, headers={'Content-Type': 'application/x-www-form-urlencoded'})
+                except Exception as e:
+                    print(e)
+                    print(response,data)
+                    if tries<0:
+                        exit(5)
+                finally:
+                    break
         else:
             uri = PIPEDRIVE_API_URL + endpoint + '?api_token=' + str(self.api_token)
-            response, data = self.http.request(uri, method=method, body=json.dumps(data), headers={'Content-Type': 'application/json'})
+            tries = 3
+            while True:
+                tries -= 1
+                try:
+                    response, data = self.http.request(uri, method=method, body=json.dumps(data), headers={'Content-Type': 'application/json'})
+                except Exception as e:
+                    print(e)
+                    print(response,data)
+                    if tries<0:
+                        exit(5)
+                finally:
+                    break
 
         logger.debug('sending {method} request to {uri}'.format(
             method=method,
