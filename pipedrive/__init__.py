@@ -30,6 +30,8 @@ class Pipedrive(object):
         data = {k: "" if v is None else v for k, v in data.items()}
         if method == "GET":
             uri = PIPEDRIVE_API_URL + endpoint + '?api_token=' + str(self.api_token)
+            if not data:
+                data = {'start':0,'end':-1}
             if data:
                 uri += '&' + urlencode(data)
             tries = 3
@@ -83,6 +85,11 @@ class Pipedrive(object):
 
     def __getattr__(self, name):
         def wrapper(data={}, method='GET'):
+            logger.debug('wrapper: data: {}'.format(data))
+            if not data:
+                data = {}
+                data['start'] = 0
+                data['end'] = -1
             if (not 'start' in data) and ('end' in data):
                 data['start'] = 0
             if (not 'end' in data) and ('start' in data):
@@ -129,6 +136,7 @@ class Pipedrive(object):
                         yield from wrapper(data, method)
 
             if ('start' in data) and ('end' in data):
+                logger.debug('_generator: data: {}'.format(data))
                 return _generator(data['start'],data['end'])
             else:
                 return _generator()

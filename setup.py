@@ -2,14 +2,14 @@ from setuptools import setup
 
 setup(
     name='python-pipedrive',
-    version="0.5.1",
+    version="0.5.2",
     license="MIT",
 
     install_requires=[
         "httplib2",
     ],
 
-    description='Light wrapper around Pipedrive API',
+    description='Light wrapper around Pipedrive API (MG mods)',
     long_description=open('README.txt').read(),
 
     author='Jonathan Scott',
