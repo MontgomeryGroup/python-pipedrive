@@ -38,6 +38,10 @@ class Pipedrive(object):
             while True:
                 tries -= 1
                 try:
+                    logger.debug('sending {method} request to {uri}'.format(
+                        method=method,
+                        uri=uri
+                    ))
                     response, data = self.http.request(uri, method=method, headers={'Content-Type': 'application/x-www-form-urlencoded'})
                     break
                 except Exception as e:
@@ -51,6 +55,11 @@ class Pipedrive(object):
             while True:
                 tries -= 1
                 try:
+                    logger.debug('sending {method} request to {uri} with body={data}'.format(
+                        method=method,
+                        uri=uri,
+                        data=json.dumps(data)
+                    ))
                     response, data = self.http.request(uri, method=method, body=json.dumps(data), headers={'Content-Type': 'application/json'})
                     break
                 except Exception as e:
@@ -59,10 +68,6 @@ class Pipedrive(object):
                     if tries<0:
                         exit(5)
 
-        logger.debug('sending {method} request to {uri}'.format(
-            method=method,
-            uri=uri
-        ))
         # print(json.dumps(json.loads(data.decode('utf-8')), sort_keys=True, indent=4))
 
         # if python2, use:
