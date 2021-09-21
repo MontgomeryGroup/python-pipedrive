@@ -37,12 +37,15 @@ class Pipedrive(object):
             tries = 3
             while True:
                 tries -= 1
+                response = ''
+                data = ''
                 try:
                     logger.debug('sending {method} request to {uri}'.format(
                         method=method,
                         uri=uri
                     ))
-                    response, data = self.http.request(uri, method=method, headers={'Content-Type': 'application/x-www-form-urlencoded'})
+                    response, data = self.http.request(uri, method=method,
+                                                       headers={'Content-Type': 'application/x-www-form-urlencoded'})
                     break
                 except Exception as e:
                     print('Exception=', e)
@@ -60,7 +63,8 @@ class Pipedrive(object):
                         uri=uri,
                         data=json.dumps(data)
                     ))
-                    response, data = self.http.request(uri, method=method, body=json.dumps(data), headers={'Content-Type': 'application/json'})
+                    response, data = self.http.request(uri, method=method, body=json.dumps(data),
+                                                       headers={'Content-Type': 'application/json'})
                     break
                 except Exception as e:
                     print('Exception=',e)
@@ -75,7 +79,7 @@ class Pipedrive(object):
         return json.loads(data.decode('utf-8'))
 
     def __init__(self, email, password=None):
-        self.http = Http()
+        self.http = Http(disable_ssl_certificate_validation=True)
         if password:
             response = self._request("/authorizations/", {"email": email, "password": password})
 
