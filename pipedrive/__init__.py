@@ -72,11 +72,12 @@ class Pipedrive(object):
                     if tries<0:
                         exit(5)
 
-        # print(json.dumps(json.loads(data.decode('utf-8')), sort_keys=True, indent=4))
-
-        # if python2, use:
-        # return json.loads(data)
-        return json.loads(data.decode('utf-8'))
+        try:
+            ret_data = json.loads(data.decode('utf-8'))
+        except:
+            print('Fault parsing result:Response=', response, 'Data=', data)
+            ret_data = []
+        return ret_data
 
     def __init__(self, email, password=None):
         self.http = Http(disable_ssl_certificate_validation=True)
