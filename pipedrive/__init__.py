@@ -25,7 +25,7 @@ class IncorrectLoginError(PipedriveError):
 
 
 class Pipedrive(object):
-    def _request(self, endpoint, data, method='POST'):
+    def _request(self, endpoint, data, method='POST', debug=False):
         # avoid storing the string 'None' when a value is None
         data = {k: "" if v is None else v for k, v in data.items()}
         if method == "GET":
@@ -40,10 +40,11 @@ class Pipedrive(object):
                 response = ''
                 data = ''
                 try:
-                    logger.debug('sending {method} request to {uri}'.format(
-                        method=method,
-                        uri=uri
-                    ))
+                    if debug:
+                        logger.debug('sending {method} request to {uri}'.format(
+                            method=method,
+                            uri=uri
+                        ))
                     response, data = self.http.request(uri, method=method,
                                                        headers={'Content-Type': 'application/x-www-form-urlencoded'})
                     break
@@ -58,11 +59,12 @@ class Pipedrive(object):
             while True:
                 tries -= 1
                 try:
-                    logger.debug('sending {method} request to {uri} with body={data}'.format(
-                        method=method,
-                        uri=uri,
-                        data=json.dumps(data)
-                    ))
+                    if debug:
+                        logger.debug('sending {method} request to {uri} with body={data}'.format(
+                            method=method,
+                            uri=uri,
+                            data=json.dumps(data)
+                        ))
                     response, data = self.http.request(uri, method=method, body=json.dumps(data),
                                                        headers={'Content-Type': 'application/json'})
                     break
@@ -94,8 +96,8 @@ class Pipedrive(object):
             self.api_token = email
 
     def __getattr__(self, name):
-        def wrapper(data={}, method='GET'):
-            logger.debug('wrapper: data: {}'.format(data))
+        def wrapper(data={}, method='GET', debug=False):
+            if debug: logger.debug('wrapper: data: {}'.format(data))
             if not data:
                 data = {}
                 data['start'] = 0
@@ -124,10 +126,11 @@ class Pipedrive(object):
                 additional_data = response.get('additional_data', {})
                 pagination_info = additional_data.get('pagination', {})
 
-                logger.debug('pagination_info: {}'.format(pagination_info))
+                # logger.debug('pagination_info: {}'.format(pagination_info))
                 if 'data' not in response:
-                    print(response)
+                    if debug: print(response)
                     if 'errorCode' in response:
+                        print(response)
                         raise PipedriveError(response)
 
                 if isinstance(response['data'], dict):
@@ -146,7 +149,7 @@ class Pipedrive(object):
                         yield from wrapper(data, method)
 
             if ('start' in data) and ('end' in data):
-                logger.debug('_generator: data: {}'.format(data))
+                if debug: logger.debug('_generator: data: {}'.format(data))
                 return _generator(data['start'],data['end'])
             else:
                 return _generator()
