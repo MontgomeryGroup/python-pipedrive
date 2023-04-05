@@ -75,10 +75,13 @@ class Pipedrive(object):
                         exit(5)
 
         try:
+            if debug: logger.debug('response: %s\ndata: %s', response, data)
             ret_data = json.loads(data.decode('utf-8'))
         except:
             print('Fault parsing result:Response=', response, 'Data=', data)
             ret_data = []
+
+        if debug: logger.debug('return: %s', data.decode('utf-8'))
         return ret_data
 
     def __init__(self, email, password=None):
@@ -109,14 +112,15 @@ class Pipedrive(object):
 
             ok = False
             while not ok:
-                response = self._request(name.replace('_', '/'), data, method)
+                response = self._request(name.replace('_', '/'), data, method, debug=debug)
                 if 'data' in response:
                     ok = True
                 else:
-                    logger.debug(response)
+                    if debug: logger.debug(response)
 
             if 'data' in response:
                 if response['data'] is None:
+                    if debug: logger.debug(response)
                     return None
 
             def _generator(start=0,end=-1):
