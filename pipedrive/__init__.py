@@ -78,7 +78,8 @@ class Pipedrive(object):
             if debug: logger.debug('response: %s\ndata: %s', response, data)
             ret_data = json.loads(data.decode('utf-8'))
         except:
-            print('Fault parsing result:Response=', response, 'Data=', data)
+            print('uri:', uri)
+            print('Fault parsing result:Response=', response[:1024], 'Data=', data)
             ret_data = []
 
         if debug: logger.debug('return: %s', data.decode('utf-8'))
