@@ -78,8 +78,7 @@ class Pipedrive(object):
             if debug: logger.debug('response: %s\ndata: %s', response, data)
             ret_data = json.loads(data.decode('utf-8'))
         except:
-            print('uri:', uri)
-            print('Fault parsing result:Response=', response[:1024], 'Data=', data)
+            print('Fault parsing result:Response=', response, 'Data=', data)
             ret_data = []
 
         if debug: logger.debug('return: %s', data.decode('utf-8'))
@@ -124,11 +123,14 @@ class Pipedrive(object):
                     if debug: logger.debug(response)
                     return None
 
-            def _generator(start=0,end=-1):
+            def _generator(start=0, end=-1):
                 if 'error' in response:
                     raise PipedriveError(response)
 
-                additional_data = response.get('additional_data', {})
+                additional_data = response.get('additional_data')
+                if additional_data is None:
+                    logger.error(f"additional_data is missing in the response: {response}")
+                    additional_data = {}
                 pagination_info = additional_data.get('pagination', {})
 
                 # logger.debug('pagination_info: {}'.format(pagination_info))
